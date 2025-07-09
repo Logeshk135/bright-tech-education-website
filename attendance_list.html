@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Attendance List</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <h1>BRIGHT TECH EDUCATION</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="attendance_list.html">Attendance</a>
+        </nav>
+    </header>
+
+<button class="add-btn" onclick="window.location.href='add_attendance.html'">➕ Add Attendance</button>
+
+<table>
+ <thead>
+  <tr>
+    <th>Attendance</th>
+    <th>Name</th>
+    <th>Class</th>
+    <th>Subject</th>
+    <th>Questions</th>
+    <th>Date</th>
+    <th>Actions</th> <!-- 👈 Add this -->
+  </tr>
+</thead>
+
+  <tbody id="attendanceTable">
+    <!-- Filled by JS -->
+  </tbody>
+</table>
+<a href="index.html">
+         <button>Back</button>
+        </a>
+
+      <script>
+  const table = document.getElementById("attendanceTable");
+  let records = JSON.parse(localStorage.getItem("attendanceRecords")) || [];
+
+  function renderTable() {
+    table.innerHTML = "";
+    if (records.length === 0) {
+      table.innerHTML = "<tr><td colspan='7'>No records found</td></tr>";
+    } else {
+      records.forEach((r, index) => {
+        table.innerHTML += `
+          <tr>
+            <td contenteditable="false">${r.attendance}</td>
+            <td contenteditable="false">${r.name}</td>
+            <td contenteditable="false">${r.class}</td>
+            <td contenteditable="false">${r.subject}</td>
+            <td contenteditable="false">${r.questions}</td>
+            <td contenteditable="false">${r.date}</td>
+            <td>
+  <button 
+    onclick="editRecord(this, ${index})" 
+    style="background-color: red; color: white; padding: 10px; margin: 10px; border: none; border-radius: 5px; cursor: pointer;">
+    Edit
+  </button>
+  <button 
+    onclick="deleteRecord(${index})" 
+    style="background-color: red; color: white; padding: 10px; margin: 10px; border: none; border-radius: 5px; cursor: pointer;">
+    Delete
+  </button>
+
+            </td>
+          </tr>
+        `;
+      });
+    }
+  }
+
+  function deleteRecord(index) {
+    if (confirm("Are you sure you want to delete this record?")) {
+      records.splice(index, 1);
+      localStorage.setItem("attendanceRecords", JSON.stringify(records));
+      renderTable();
+    }
+  }
+
+  function editRecord(btn, index) {
+    const row = btn.parentElement.parentElement;
+    const cells = row.querySelectorAll("td");
+
+    if (btn.textContent === "Edit") {
+      for (let i = 0; i < 6; i++) {
+        cells[i].contentEditable = true;
+        cells[i].style.backgroundColor = "#eaffea";
+      }
+      btn.textContent = "Save";
+    } else {
+      for (let i = 0; i < 6; i++) {
+        cells[i].contentEditable = false;
+        cells[i].style.backgroundColor = "white";
+      }
+
+      // Update the record
+      records[index] = {
+        attendance: cells[0].innerText.trim(),
+        name: cells[1].innerText.trim(),
+        class: cells[2].innerText.trim(),
+        subject: cells[3].innerText.trim(),
+        questions: cells[4].innerText.trim(),
+        date: cells[5].innerText.trim(),
+      };
+
+      localStorage.setItem("attendanceRecords", JSON.stringify(records));
+      btn.textContent = "Edit";
+    }
+  }
+
+  renderTable();
+</script>
+
+    <footer>
+        <h1>BRIGHT TECH EDUCATION</h1>
+        <p>ADDRESS : No.6/61/2 Jayaraman Street ,Old Washermenpet, Chennai -600021(opp :Nirmala Store)</p>
+        <p>&copy;Bright Tech Education</p>
+    </footer>
+</body>
+
+</html>
